@@ -5,18 +5,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Geolocation</title>
 </head>
-
 <body>
-
-    <h3>Nama : Shafa Salsabila Ramadhani</h3>
-    <h3>NIM : 20240140208</h3>
+    <h3>Nama: Shafa Salsabila Ramadhani</h3>
+    <h3>NIM: 20240140208</h3>
 
     <p>
-        Kota : 
+        Kota: 
         <span id="lokasi"></span>
     </p>
 
     <hr>
-    
+
+    <p>
+        Koordinat: 
+        <span id="negara"></span>
+    </p>
+
+    <script>
+        fetch("/api/lokasi")
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+
+            document.getElementById("lokasi").innerHTML = data.kota;
+            document.getElementById("negara").innerHTML = data.koordinat;
+        })
+        .catch(error => {
+            console.error(error);
+        });
+    </script>
 </body>
 </html>
