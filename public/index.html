@@ -1,38 +1,158 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geolocation</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Geolocation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --langit: #d9eaf6;
+      --tinta: #12284a;
+      --matahari: #f5b82e;
+      --lumut: #1f7a6d;
+      --kertas: #fffdf7;
+      --garis: #b9cfe0;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh;
+      font-family: "DM Sans", system-ui, sans-serif;
+      color: var(--tinta); background: var(--langit);
+      display: flex; flex-direction: column; align-items: center;
+      padding: 32px 16px 48px;
+    }
+    header { text-align: center; margin-bottom: 24px; }
+    h1 { font-family: "Fraunces", Georgia, serif; font-weight: 800; font-size: clamp(2rem, 6vw, 3rem); margin: 0 0 6px; }
+    .identitas { margin: 0; font-size: .95rem; }
+
+    form { display: flex; gap: 8px; width: min(520px, 100%); margin-bottom: 28px; }
+    input {
+      flex: 1; min-width: 0; padding: 14px 16px; font: inherit; color: var(--tinta);
+      border: 2px solid var(--tinta); border-radius: 10px; background: var(--kertas);
+    }
+    button {
+      padding: 14px 20px; font: inherit; font-weight: 700; color: var(--tinta);
+      background: var(--matahari); border: 2px solid var(--tinta); border-radius: 10px; cursor: pointer;
+    }
+    button:hover { background: #ffc94d; }
+    button:disabled { opacity: .6; cursor: wait; }
+    :focus-visible { outline: 3px solid var(--lumut); outline-offset: 2px; }
+
+    .tag {
+      width: min(520px, 100%); background: var(--kertas);
+      border: 2px solid var(--tinta); border-radius: 18px; overflow: hidden;
+      box-shadow: 6px 6px 0 var(--tinta);
+    }
+    .tag[hidden] { display: none; }
+    .atas { padding: 22px 24px 18px; }
+    .atas small { color: var(--lumut); font-weight: 700; }
+    .atas h2 { font-family: "Fraunces", Georgia, serif; font-size: 2rem; margin: 2px 0 4px; }
+    .atas p { margin: 0; font-size: .9rem; opacity: .8; }
+
+    .sobekan { border-top: 3px dashed var(--garis); position: relative; }
+    .sobekan::before, .sobekan::after {
+      content: ""; position: absolute; top: -13px; width: 24px; height: 24px;
+      background: var(--langit); border: 2px solid var(--tinta); border-radius: 50%;
+    }
+    .sobekan::before { left: -14px; }
+    .sobekan::after { right: -14px; }
+
+    dl { margin: 0; padding: 12px 24px 8px; }
+    .baris { display: flex; justify-content: space-between; gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--garis); }
+    .baris:last-child { border-bottom: 0; }
+    dt { font-weight: 500; opacity: .75; }
+    dd { margin: 0; font-weight: 700; text-align: right; }
+
+    .koordinat { display: grid; grid-template-columns: 1fr 1fr; background: var(--tinta); color: var(--kertas); }
+    .koordinat div { padding: 16px 24px; }
+    .koordinat div + div { border-left: 2px dashed #4a6288; }
+    .koordinat span { display: block; font-size: .8rem; opacity: .75; }
+    .koordinat strong { font-family: "Fraunces", Georgia, serif; font-size: 1.5rem; color: var(--matahari); }
+
+    .pesan { width: min(520px, 100%); text-align: center; font-weight: 500; }
+    .pesan.error { color: #a12626; }
+
+    @media (max-width: 420px) {
+      form { flex-direction: column; }
+      .koordinat { grid-template-columns: 1fr; }
+      .koordinat div + div { border-left: 0; border-top: 2px dashed #4a6288; }
+    }
+  </style>
 </head>
 <body>
-    <h3>Nama: Shafa Salsabila Ramadhani</h3>
-    <h3>NIM: 20240140208</h3>
+  <header>
+    <h1>Cari Lokasi</h1>
+    <p class="identitas">Shafa Salsabila Ramadhani &middot; 20240140208</p>
+  </header>
 
-    <p>
-        Kota: 
-        <span id="lokasi"></span>
-    </p>
+  <form id="form-cari">
+    <input id="input-lokasi" type="text" placeholder="Contoh: Bandung City" aria-label="Nama lokasi" required>
+    <button id="tombol" type="submit">Cari lokasi</button>
+  </form>
 
-    <hr>
+  <p id="pesan" class="pesan" role="status">Ketik nama lokasi, lalu tekan Cari lokasi.</p>
 
-    <p>
-        Koordinat: 
-        <span id="negara"></span>
-    </p>
+  <article id="hasil" class="tag" hidden>
+    <div class="atas">
+      <small>Lokasi ditemukan</small>
+      <h2 id="lokasi"></h2>
+      <p id="alamat"></p>
+    </div>
+    <div class="sobekan"></div>
+    <dl>
+      <div class="baris"><dt>Negara</dt><dd id="negara"></dd></div>
+      <div class="baris"><dt>Provinsi</dt><dd id="provinsi"></dd></div>
+      <div class="baris"><dt>Kecamatan</dt><dd id="kecamatan"></dd></div>
+    </dl>
+    <div class="koordinat">
+      <div><span>Longitude</span><strong id="longitude"></strong></div>
+      <div><span>Latitude</span><strong id="latitude"></strong></div>
+    </div>
+  </article>
 
-    <script>
-        fetch("/api/lokasi")
-        .then(response => response.json())
-        .then(data => {
-            console.log(data);
+  <script>
+    const form = document.getElementById("form-cari");
+    const input = document.getElementById("input-lokasi");
+    const tombol = document.getElementById("tombol");
+    const pesan = document.getElementById("pesan");
+    const hasil = document.getElementById("hasil");
 
-            document.getElementById("lokasi").innerHTML = data.kota;
-            document.getElementById("negara").innerHTML = data.koordinat;
-        })
-        .catch(error => {
-            console.error(error);
-        });
-    </script>
+    const isi = (id, nilai) => {
+      document.getElementById(id).textContent = nilai ?? "-";
+    };
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      tombol.disabled = true;
+      pesan.className = "pesan";
+      pesan.textContent = "Mencari lokasi...";
+      hasil.hidden = true;
+
+      try {
+        const res = await fetch(`/api/lokasi?q=${encodeURIComponent(input.value)}`);
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message);
+
+        isi("lokasi", data.lokasi);
+        isi("alamat", data.alamat_lengkap);
+        isi("negara", data.negara);
+        isi("provinsi", data.provinsi);
+        isi("kecamatan", data.kecamatan);
+        isi("longitude", data.longitude.toFixed(5));
+        isi("latitude", data.latitude.toFixed(5));
+
+        pesan.textContent = "";
+        hasil.hidden = false;
+      } catch (err) {
+        pesan.className = "pesan error";
+        pesan.textContent = err.message;
+      } finally {
+        tombol.disabled = false;
+      }
+    });
+  </script>
 </body>
 </html>
