@@ -1,7 +1,9 @@
 ﻿# 208_WeatherApi
 
 ### hasil postman
-<img width="959" height="437" alt="image" src="https://github.com/user-attachments/assets/e461b438-5cf7-4e9b-8846-9898a7996b91" />
+<img width="957" height="539" alt="image" src="https://github.com/user-attachments/assets/1c51e2b7-05dc-43cd-b6dc-654e8ed4fb67" />
+
 
 ### tampilan browser
-<img width="691" height="219" alt="image" src="https://github.com/user-attachments/assets/7bf1890e-51a1-4ab6-a7fe-31e6134f6bde" />
+<img width="959" height="506" alt="image" src="https://github.com/user-attachments/assets/d0431d22-cf93-4fbc-98db-215c32ac9bb6" />
+
